@@ -211,8 +211,7 @@ client.on("message", async message => {
 		//r9k filter
 		//maybe move these variables into a text file for persistence later
 		//first check if muted
-		if (message.author.id in mutes){
-			if (mutes[message.author.id][1] > Date.now()){
+		if (message.author.id in mutes && mutes[message.author.id][1] > Date.now()){
 				message.react("❌")
 				return
 			}
