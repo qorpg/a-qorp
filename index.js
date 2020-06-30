@@ -220,11 +220,9 @@ client.on("message", async message => {
 		//then check if new message is an infraction
 		if (lastMessages.includes(anonMessage)){
 			message.react("❌")
-			if (message.author.id in mutes){
-				const muteTime = mutes[message.author.id][0] * 2 //if previously muted, mute again and double the mute time
-			} else {
-				const muteTime = 30 //start with 30 second mute
-			}
+			//if previously muted, mute again and double the mute time
+			//otherwise mute for 30 seconds
+			const muteDuration = message.author.id in mutes ? mutes[message.author.id][0] * 2 : 30
 			const unmuteTime = Date.now() + (muteTime*1000) //convert mute duration into epooch time
 			mutes[message.author.id] = [muteTime, unmuteTime]
 			message.author.send("Muted for " + muteTime + " seconds.")
