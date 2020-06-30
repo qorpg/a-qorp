@@ -152,8 +152,77 @@ client.on("message", async message => {
 		}
 		message.react("✅")
 
-		lastMessages.push(message)
-		if (lastMessages.length > 10) lastMessages.shift()
+		//only use log for r9k
+		//lastMessages.push(message)
+		//if (lastMessages.length > 10) lastMessages.shift()
+	}
+	
+	if(command === "r9k" || command === "r"){
+		const anonMessage = args.join(" ")
+		message.delete().catch(O_o=>{})
+
+		//Newline filter (max 5)
+		nlre = /\n/g
+		if(nlre.test(anonMessage)){
+			nlFilterArray = anonMessage.match(nlre)
+			if(nlFilterArray.length > 5){
+				message.react("❌")
+				return
+			}
+		}
+		
+		//@everyone filter
+		aere = /@everyone|@here/
+		if(aere.test(anonMessage)){
+			if(message.author.id != config.qorpID){
+				message.react("❌")
+				return
+			}
+		}
+
+		//Whitespace filter
+		wsre = /_\s+_|\*\* *\*\*/
+		if(wsre.test(anonMessage)){
+			message.react("❌")
+			return
+		}
+
+		//Character limit filter
+		if(anonMessage.length > 1000){
+			message.react("❌")
+			return
+		}
+
+		//Blank message filter
+		if(anonMessage === ""){
+			message.react("❌")
+			return
+		}
+		
+		//r9k filter - currently just checks against previous messages
+		//maybe move this into a text file for persistence later
+		if (lastMessages.includes(anonMessage)) {
+			message.react("❌")
+			return
+		}
+
+
+		//Ban filter
+		for(i in config.banList){
+			if(message.author.id == config.banList[i]){
+				message.react("❌")
+				return
+			}
+		}
+
+		//Send Message
+		if(anonMessage != "test"){
+			//keep using anon channel for now, but change to a new channel later?
+			client.channels.cache.get(config.anonChannelID).send(anonMessage)
+		}
+		message.react("✅")
+
+		lastMessages.push(message)  // add message to log if it was successful
 	}
 })
 
