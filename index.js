@@ -11,6 +11,7 @@ client.on("ready", () => {
 })
 
 const lastMessages = []
+const mutes = {}
 
 client.on("message", async message => {
 	if(message.author.bot) return
@@ -199,14 +200,6 @@ client.on("message", async message => {
 			return
 		}
 		
-		//r9k filter - currently just checks against previous messages
-		//maybe move this into a text file for persistence later
-		if (lastMessages.includes(anonMessage)) {
-			message.react("❌")
-			return
-		}
-
-
 		//Ban filter
 		for(i in config.banList){
 			if(message.author.id == config.banList[i]){
@@ -214,6 +207,29 @@ client.on("message", async message => {
 				return
 			}
 		}
+		
+		//r9k filter
+		//maybe move these variables into a text file for persistence later
+		//first check if muted
+		if (message.author.id in mutes){
+			if (mutes[message.author.id][1] > Date.now()){
+				message.react("❌")
+				return
+			}
+		}
+		//then check if new message is an infraction
+		if (lastMessages.includes(anonMessage)){
+			message.react("❌")
+			if (message.author.id in mutes){
+				const muteTime = mutes[message.author.id][0] * 2 //if previously muted, mute again and double the mute time
+			} else {
+				const muteTime = 30 //start with 30 second mute
+			}
+			const unmuteTime = Date.now() + (muteTime*1000) //convert mute duration into epooch time
+			mutes[message.author.id] = [muteTime, unmuteTime]
+			message.author.send("Muted for " + muteTime + " seconds.")
+			return
+		}		
 
 		//Send Message
 		if(anonMessage != "test"){
@@ -222,7 +238,7 @@ client.on("message", async message => {
 		}
 		message.react("✅")
 
-		lastMessages.push(message)  // add message to log if it was successful
+		lastMessages.push(anonMessage)  // add message to log if it was successful
 	}
 })
 
