@@ -64,6 +64,11 @@ client.on("message", async message => {
 		message.channel.send(":point_left: :sunglasses: :point_left:")
 	}
 
+	mre10 = /monkaEyes/
+	if(mre10.test(message)){
+		message.channel.send("<:monkaEyes1:727383924740849664><:monkaEyes2:727383934736007259><:monkaEyes3:727383947528372274><:monkaEyes4:727384422692945960>")
+	}
+	
 	//COMMANDS WITH PREFIX
 
 	if(!message.content.startsWith(config.prefix)) return
