@@ -232,7 +232,7 @@ client.on("message", async message => {
 		//Send Message
 		if(anonMessage != "test"){
 			//keep using anon channel for now, but change to a new channel later?
-			client.channels.cache.get(config.anonChannelID).send(anonMessage)
+			client.channels.cache.get(config.r9kChannelID).send(anonMessage)
 		}
 		message.react("✅")
 
