@@ -212,9 +212,8 @@ client.on("message", async message => {
 		//maybe move these variables into a text file for persistence later
 		//first check if muted
 		if (message.author.id in mutes && mutes[message.author.id][1] > Date.now()){
-				message.react("❌")
-				return
-			}
+			message.react("❌")
+			return
 		}
 		//then check if new message is an infraction
 		if (lastMessages.includes(anonMessage)){
