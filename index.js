@@ -65,7 +65,7 @@ client.on("message", async message => {
 	}
 
 	mre10 = /monkaEyes/
-	if(mre10.test(message)){
+	if(mre10.test(message) && message.channel.guild == config.anonServerID){
 		message.channel.send("<:monkaEyes1:727383924740849664><:monkaEyes2:727383934736007259><:monkaEyes3:727383947528372274><:monkaEyes4:727384422692945960>")
 	}
 	
@@ -147,7 +147,9 @@ client.on("message", async message => {
 		}
 
 		//Send Message
-		client.channels.cache.get("726238293582282763").send(anonMessage)
+		if(anonMessage != "test"){
+			client.channels.cache.get(config.anonChannelID).send(anonMessage)
+		}
 		message.react("✅")
 
 		lastMessages.push(message)
