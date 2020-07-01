@@ -18,7 +18,7 @@ client.on("message", async message => {
 
 	if(message.channel.id === config.r9kChannelID){
 
-		const r9kMessage = message.content.toLowerCase().trim()
+		const r9kMessage = message.content.toLowerCase().trim().replace(/[_\W]+/g, "")
 
 		/*
 
