@@ -69,8 +69,8 @@ client.on("message", async message => {
 		if(lastMessages.includes(r9kMessage)){
 			message.delete()
 			const muteDuration = message.author.id in r9kMutes ? r9kMutes[message.author.id][0]*4 : 1
-			const unmuteTime = Date.now() + 1000*muteDuration//250*4**muteNumber
-			r9kMutes[message.author.id] = [muteDuration, unmuteTime]
+			const muteUntil = Date.now() + 1000*muteDuration
+			r9kMutes[message.author.id] = [muteDuration, muteUntil]
 			fs.writeFileSync('mutes.json', JSON.stringify(r9kMutes))
 			message.reply("you have been muted for " + muteDuration + " seconds")
 		}
