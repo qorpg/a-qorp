@@ -16,7 +16,7 @@ const r9kMutes = require("./mutes.json")
 client.on("message", async message => {
 	if(message.author.bot) return
 
-	if(message.channel.id === "727603494097387590"){
+	if(message.channel.id === config.r9kChannelID){
 
 		const r9kMessage = message.content.toLowerCase().trim()
 
