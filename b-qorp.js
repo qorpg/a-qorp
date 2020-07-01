@@ -12,6 +12,14 @@ const lastMessages = require("./messages.json")
 const mutes = {}
 const r9kMutes = require("./mutes.json")
 
+setInterval(decay, 21600000) // run decay function every 6 hours
+
+function decay(){
+	for (var id in r9kMutes){
+		r9kMutes[id][0] = Math.floor(r9kMutes[id][0] /= 2)
+	}
+	fs.writeFileSync('mutes.json', JSON.stringify(r9kMutes))
+}
 
 client.on("message", async message => {
 	if(message.author.bot) return
