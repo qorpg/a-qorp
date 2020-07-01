@@ -2,14 +2,15 @@ const Discord = require("discord.js")
 const client = new Discord.Client()
 const config = require("./config.json")
 const sqlite = require('sqlite3').verbose();
+const fs  = require('fs') 
 
 client.on("ready", () => {
 	console.log(`Bot has started, with ${client.users.cache.size} users, in ${client.guilds.cache.size} guilds.`);
 })
 
-const lastMessages = []
+const lastMessages = require("./messages.json")
 const mutes = {}
-const r9kMutes = {}
+const r9kMutes = require("./mutes.json")
 
 
 client.on("message", async message => {
@@ -62,12 +63,14 @@ client.on("message", async message => {
 			const muteNumber = message.author.id in r9kMutes ? r9kMutes[message.author.id][0] + 1 : 1
 			const unmuteTime = Date.now() + 250*4**muteNumber
 			r9kMutes[message.author.id] = [muteNumber, unmuteTime]
+			fs.writeFileSync('mutes.json', JSON.stringify(r9kMutes))
 			message.channel.send("you have been muted for " + (250*4**r9kMutes[message.author.id][0])/1000 + " seconds")
 		}
 
 		
 
 		lastMessages.push(r9kMessage)  // add message to log if it was successful
+		fs.writeFileSync('messages.json', JSON.stringify(lastMessages))
 	}
 })
 
