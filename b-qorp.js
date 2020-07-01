@@ -64,7 +64,7 @@ client.on("message", async message => {
 			const unmuteTime = Date.now() + 250*4**muteNumber
 			r9kMutes[message.author.id] = [muteNumber, unmuteTime]
 			fs.writeFileSync('mutes.json', JSON.stringify(r9kMutes))
-			message.channel.send("you have been muted for " + (250*4**r9kMutes[message.author.id][0])/1000 + " seconds")
+			message.reply("you have been muted for " + (250*4**r9kMutes[message.author.id][0])/1000 + " seconds")
 		}
 
 		
