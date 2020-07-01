@@ -11,6 +11,7 @@ client.on("ready", () => {
 })
 
 const lastMessages = []
+const mutes = {}
 
 client.on("message", async message => {
 	if(message.author.bot) return
@@ -152,8 +153,88 @@ client.on("message", async message => {
 		}
 		message.react("✅")
 
-		lastMessages.push(message)
-		if (lastMessages.length > 10) lastMessages.shift()
+		//only use log for r9k
+		//lastMessages.push(message)
+		//if (lastMessages.length > 10) lastMessages.shift()
+	}
+	
+	if(command === "r9k" || command === "r"){
+		const anonMessage = args.join(" ")
+		message.delete().catch(O_o=>{})
+
+		//Newline filter (max 5)
+		nlre = /\n/g
+		if(nlre.test(anonMessage)){
+			nlFilterArray = anonMessage.match(nlre)
+			if(nlFilterArray.length > 5){
+				message.react("❌")
+				return
+			}
+		}
+		
+		//@everyone filter
+		aere = /@everyone|@here/
+		if(aere.test(anonMessage)){
+			if(message.author.id != config.qorpID){
+				message.react("❌")
+				return
+			}
+		}
+
+		//Whitespace filter
+		wsre = /_\s+_|\*\* *\*\*/
+		if(wsre.test(anonMessage)){
+			message.react("❌")
+			return
+		}
+
+		//Character limit filter
+		if(anonMessage.length > 1000){
+			message.react("❌")
+			return
+		}
+
+		//Blank message filter
+		if(anonMessage === ""){
+			message.react("❌")
+			return
+		}
+		
+		//Ban filter
+		for(i in config.banList){
+			if(message.author.id == config.banList[i]){
+				message.react("❌")
+				return
+			}
+		}
+		
+		//r9k filter
+		//maybe move these variables into a text file for persistence later
+		//first check if muted
+		if (message.author.id in mutes && mutes[message.author.id][1] > Date.now()){
+			message.react("❌")
+			return
+		}
+		//then check if new message is an infraction
+		if (lastMessages.includes(anonMessage)){
+			message.react("❌")
+			//if previously muted, mute again and double the mute time
+			//otherwise mute for 30 seconds
+			const muteDuration = message.author.id in mutes ? mutes[message.author.id][0] * 2 : 30
+			const unmuteTime = Date.now() + (muteTime*1000) //convert mute duration into epooch time
+			mutes[message.author.id] = [muteTime, unmuteTime]
+			message.author.send("Muted for " + muteTime + " seconds.")
+			return
+		}		
+
+		//Send Message
+		if(anonMessage != "test"){
+			//keep using anon channel for now, but change to a new channel later?
+			client.channels.cache.get(config.r9kChannelID).send(anonMessage)
+		}
+		message.react("✅")
+
+		lastMessages.push(anonMessage)  // add message to log if it was successful
 	}
 })
 
