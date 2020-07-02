@@ -2,4 +2,4 @@
 !.gitignore
 !README.md
 !index.js
-
+!config.json.template
