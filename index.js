@@ -10,8 +10,6 @@ client.on("ready", () => {
 	client.user.setActivity("a-help")
 })
 
-const lastMessages = []
-
 client.on("message", async message => {
 	if(message.author.bot) return
 	
@@ -130,14 +128,6 @@ client.on("message", async message => {
 			return
 		}
 
-		/*
-		if (lastMessages.filter(msg => msg === message).length >= 3) {
-			message.react("❌")
-			return
-		}
-		*/
-
-
 		//Ban filter
 		for(i in config.banList){
 			if(message.author.id == config.banList[i]){
@@ -151,9 +141,6 @@ client.on("message", async message => {
 			client.channels.cache.get(config.anonChannelID).send(anonMessage)
 		}
 		message.react("✅")
-
-		lastMessages.push(message)
-		if (lastMessages.length > 10) lastMessages.shift()
 	}
 })
 
