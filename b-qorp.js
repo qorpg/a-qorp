@@ -1,20 +1,19 @@
 const Discord = require("discord.js")
 const client = new Discord.Client()
 const config = require("./config.json")
-const sqlite = require('sqlite3').verbose();
 const fs  = require('fs') 
 
 client.on("ready", () => {
 	console.log(`Bot has started, with ${client.users.cache.size} users, in ${client.guilds.cache.size} guilds.`);
 })
 
-const lastMessages = require("./messages.json")
-const mutes = {}
-const r9kMutes = require("./mutes.json")
+//these files need to be created manually
+const lastMessages = require("./messages.json") // blank file should be just []
+const r9kMutes = require("./mutes.json") // blank file should be just {}
 
 setInterval(decay, 21600000) // run decay function every 6 hours
 
-function decay(){
+function decay(){ // loop through all id's and half their mute duration
 	for (var id in r9kMutes){
 		r9kMutes[id][0] = Math.floor(r9kMutes[id][0]/2)
 	}
@@ -25,59 +24,27 @@ client.on("message", async message => {
 	if(message.author.bot) return
 
 	if(message.channel.id === config.r9kChannelID){
+		//apply primary filter - make all lowercase and remove non alphanumberic characters
+		const r9kMessage = message.content.toLowerCase().replace(/[_\W]+/g, "")
 
-		const r9kMessage = message.content.toLowerCase().trim().replace(/[_\W]+/g, "")
-
-		/*
-
-		//r9k filter
-		//maybe move these variables into a text file for persistence later
-		//first check if muted
-		if (message.author.id in mutes && mutes[message.author.id][1] > Date.now()){
-			message.delete()
-			return
-		}
-		//then check if new message is an infraction
-		if (lastMessages.includes(r9kMessage.toLowerCase().trim())){
-			message.delete()
-			//if previously muted, mute again and double the mute time
-			//otherwise mute for 30 seconds
-			const muteDuration = message.author.id in mutes ? mutes[message.author.id][0] * 2 : 30
-			const unmuteTime = Date.now() + (muteTime*1000) //convert mute duration into epooch time
-			mutes[message.author.id] = [muteTime, unmuteTime]
-			message.author.send("Muted for " + muteTime + " seconds.")
-			return
-		}		
-
-		*/
-
-		//r9kMutes[userID][x]
-		//x=0 number of times muted
-		//x=1 unix time that user will be unmuted
-
-		
-
-		/*if(!(message.author.id in r9kMutes)){
-			r9kMutes[message.author.id][0] = 0
-		}*/
-
+		//check if author of message is currently muted
 		if(message.author.id in r9kMutes && r9kMutes[message.author.id][1] > Date.now()){
 			message.delete()
 			return
 		}
 
+		//check if message is an infraction
 		if(lastMessages.includes(r9kMessage)){
 			message.delete()
+			//either quadruple previous time or start with 1 (in seconds)
 			const muteDuration = message.author.id in r9kMutes ? r9kMutes[message.author.id][0]*4 : 1
 			const muteUntil = Date.now() + 1000*muteDuration
-			r9kMutes[message.author.id] = [muteDuration, muteUntil]
+			r9kMutes[message.author.id] = [muteDuration, muteUntil] // add/update their mute variables
 			fs.writeFileSync('mutes.json', JSON.stringify(r9kMutes))
 			message.reply("you have been muted for " + muteDuration + " seconds")
 		}
 
-		
-
-		lastMessages.push(r9kMessage)  // add message to log if it was successful
+		lastMessages.push(r9kMessage)  // add message to log if message was successful
 		fs.writeFileSync('messages.json', JSON.stringify(lastMessages))
 	}
 })
