@@ -32,6 +32,9 @@ client.on("message", async message => {
 	if(message.channel.id === config.r9kChannelID){
 		//apply primary filter - make all lowercase and remove non alphanumberic characters
 		const r9kMessage = message.content.toLowerCase().replace(/[_\W]+/g, "")
+		
+		//if message has an attatchement, just allow the message for now
+		if (message.attachments.size > 0) return
 
 		//check if author of message is currently muted
 		if(message.author.id in r9kMutes && r9kMutes[message.author.id][1] > Date.now()){
@@ -59,27 +62,33 @@ client.on("message", async message => {
 
 	mre1 = /^h+e+ll+o+/i
 	if(mre1.test(message)){
-		message.reply("Hello to you")}
+		message.reply("Hello to you")
+	}
 	
 	mre2 = /grimacing/i
 	if(mre2.test(message)){
-		message.react("😬")}
+		message.react("😬")
+	}
 	
 	mre3 = /nuclear reactor/i
 	if(mre3.test(message)){
-		message.channel.send(":warning: WARNING: Core meltdown immanent. :warning:")}
+		message.channel.send(":warning: WARNING: Core meltdown immanent. :warning:")
+	}
 	
 	mre4 = /shut up qorp/i
 	if(mre4.test(message) && message.author.id != "690702589461004319"){
-		message.reply("SHUT THE FUCK UP IM BANNING YOU")}
+		message.reply("SHUT THE FUCK UP IM BANNING YOU")
+	}
 	
 	mre5 = /^test$/i
 	if(mre5.test(message)){
-		message.channel.send(":white_check_mark:")}
+		message.channel.send(":white_check_mark:")
+	}
 	
 	const mre6 = /owo|uwu|uwo|owu/i
 	if(mre6.test(message)){
-		message.channel.send("5c(xii)")}
+		message.channel.send("5c(xii)")
+	}
 
 	mre7 = /^qorp$/i
 	if(mre7.test(message)){
