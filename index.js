@@ -32,15 +32,15 @@ client.on("message", async message => {
 	if(message.channel.id === config.r9kChannelID){
 		//apply primary filter - make all lowercase and remove non alphanumberic characters
 		const r9kMessage = message.content.toLowerCase().replace(/[_\W]+/g, "")
-		
-		//if message has an attatchement, just allow the message for now
-		if (message.attachments.size > 0) return
 
 		//check if author of message is currently muted
 		if(message.author.id in r9kMutes && r9kMutes[message.author.id][1] > Date.now()){
 			message.delete()
 			return
 		}
+
+		//if message has an attatchement and message is blank just allow the message for now 
+		if (message.attachments.size > 0 && message.content === "") return
 
 		//check if message is an infraction
 		if(lastMessages.includes(r9kMessage)){
