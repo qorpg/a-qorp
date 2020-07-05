@@ -46,7 +46,11 @@ client.on("message", async message => {
 		if(lastMessages.includes(r9kMessage)){
 			message.delete()
 			//either quadruple previous time or start with 1 (in seconds)
-			const muteDuration = message.author.id in r9kMutes ? r9kMutes[message.author.id][0]*4 : 1
+			//if time has decayed to 0, start from 1 again
+			//if time is -ve it will be multiplied - this is for testing without mutes
+			const muteDuration = 
+				(message.author.id in r9kMutes && r9kMutes[message.author.id][0] !== 0)
+				? r9kMutes[message.author.id][0]*4 : 1
 			const muteUntil = Date.now() + 1000*muteDuration
 			r9kMutes[message.author.id] = [muteDuration, muteUntil] // add/update their mute variables
 			fs.writeFileSync('mutes.json', JSON.stringify(r9kMutes))
