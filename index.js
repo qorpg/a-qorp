@@ -150,24 +150,18 @@ client.on("message", async message => {
 	}
 	
 	if(command === "streaks"){
-		//put users into array
-		const streaks = Object.entries(r9kStreaks).map(([id, streak]) => {
+		msg = "**Streaks for Robot9000:**\nNumber of messages sent without being muted\n"
+		
+		const streaks = Object.entries(r9kStreaks).map(([id, streak]) => { // convert to array
 			const user = await client.users.fetch(id)
 			return [user.tag, streak]
-		})
-		
-		// Sort the array based on the second element - their streaks
-		streaks.sort(function(first, second){
+		}).sort(function(first, second){ // sort by streak in descending order
 			return second[1] - first[1]
-		})
+		}).map(([tag, streak]) => { // format nicely
+			return "    " + tag + ": " + streak
+		}).join('\n')
 		
-		//loop through array to create message to send
-		msg = "**Streaks for Robot9000:**\nNumber of messages sent without being muted\n"
-		for (var user = 0; i < streaks.length; i++){
-			msg += "    " + streaks[user][0] + ": " + streaks[user][1] + "\n"
-		}
-		
-		message.channel.send(msg)
+		message.channel.send(msg + streaks)
 	}
 
 	if(command === "anon" || command === "a"){
