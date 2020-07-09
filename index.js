@@ -14,6 +14,7 @@ client.on("ready", () => {
 //these files need to be created manually
 const lastMessages = require("./messages.json") // blank file should be just []
 const r9kMutes = require("./mutes.json") // blank file should be just {}
+const r9kStreaks = require("./streaks.json") // blank file should be just {}
 
 setInterval(decay, 21600000) // run decay function every 6 hours
 
@@ -45,6 +46,9 @@ client.on("message", async message => {
 		//check if message is an infraction
 		if(lastMessages.includes(r9kMessage)){
 			message.delete()
+			//set/reset streak to 0
+			r9kStreaks[message.author.id] = 0
+			
 			//either quadruple previous time or start with 1 (in seconds)
 			//if time has decayed to 0, start from 1 again
 			//if time is -ve it will be multiplied - this is for testing without mutes
@@ -56,7 +60,11 @@ client.on("message", async message => {
 			fs.writeFileSync('mutes.json', JSON.stringify(r9kMutes))
 			message.reply("you have been muted for " + muteDuration + " seconds")
 		}
-
+		
+		//add one to streak, or set streak to 1 if not already in streaks
+		r9kStreaks[message.author.id] = message.author.id in r9kStreaks
+			? r9kStreaks[message.author.id] + 1 : 1
+		
 		lastMessages.push(r9kMessage)  // add message to log if message was successful
 		fs.writeFileSync('messages.json', JSON.stringify(lastMessages))
 		return
@@ -139,7 +147,22 @@ client.on("message", async message => {
 
 	if(command === "pfp"){
 		message.channel.send("https://cdn.discordapp.com/attachments/485564315714453534/726322343365968012/1f921.png")
-	}        
+	}
+	
+	if(command === "streaks"){
+		msg = "**Streaks for Robot9000:**\nNumber of messages sent without being muted\n"
+		
+		const streaks = Object.entries(r9kStreaks).map(([id, streak]) => { // convert to array
+			const user = await client.users.fetch(id)
+			return [user.tag, streak]
+		}).sort(function(first, second){ // sort by streak in descending order
+			return second[1] - first[1]
+		}).map(([tag, streak]) => { // format nicely
+			return "    " + tag + ": " + streak
+		}).join('\n')
+		
+		message.channel.send(msg + streaks)
+	}
 
 	if(command === "anon" || command === "a"){
 		const anonMessage = args.join(" ")
