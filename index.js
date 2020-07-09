@@ -152,13 +152,13 @@ client.on("message", async message => {
 	if(command === "streaks"){
 		msg = "**Streaks for Robot9000:**\nNumber of messages sent without being muted\n"
 		
-		const streaks = Object.entries(r9kStreaks).map(([id, streak]) => { // convert to array
-			const user = await client.users.fetch(id)
-			return [user.tag, streak]
-		}).sort(function(first, second){ // sort by streak in descending order
-			return second[1] - first[1]
+		const streaks = (await Promise.all(Object.entries(r9kStreaks).map(async ([id, streak]) => { // convert to array
+		const user = await client.users.fetch(id)
+		return [user.tag, streak]
+		}))).sort(function (first, second) { // sort by streak in descending order
+		return second[1] - first[1]
 		}).map(([tag, streak]) => { // format nicely
-			return "    " + tag + ": " + streak
+		return "    " + tag + ": " + streak
 		}).join('\n')
 		
 		message.channel.send(msg + streaks)
