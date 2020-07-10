@@ -172,7 +172,7 @@ client.on("message", async message => {
 		nlre = /\n/g
 		if(nlre.test(anonMessage)){
 			nlFilterArray = anonMessage.match(nlre)
-			if(nlFilterArray.length > 5){
+			if(nlFilterArray.length > 20){
 				message.react("❌")
 				return
 			}
