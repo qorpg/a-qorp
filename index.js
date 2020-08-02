@@ -40,7 +40,7 @@ client.on("message", async message => {
 			return
 		}
 
-		//if message has an attatchement and message is blank just allow the message for now 
+		//if message has an attachment and message is blank just allow the message for now 
 		if (message.attachments.size > 0 && message.content === "") return
 
 		//check if message is an infraction
