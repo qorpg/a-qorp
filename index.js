@@ -132,7 +132,7 @@ client.on("message", async message => {
 	
 	//COMMANDS WITH PREFIX
 
-	if(!message.content.startsWith(config.prefix)) return
+	if(!message.content.toLowerCase().startsWith(config.prefix)) return
 	const args = message.content.slice(config.prefix.length).trim().split(/ +/g)
 	const command = args.shift().toLowerCase()
 	
